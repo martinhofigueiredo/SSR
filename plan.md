@@ -18,6 +18,8 @@
 |[Cookie locations 2](https://www.thewindowsclub.com/cookies-folder-location-windows)|
 |[Session Duplication](https://security.stackexchange.com/questions/209218/how-can-i-inject-cookie-from-wireshark-into-a-browser-sesson)|
 |[WEBServer in Esp32C3](https://www.youtube.com/watch?v=ZDvSHmcfcuA)|
+|[Cookies linux](https://ubuntuforums.org/showthread.php?t=1627046)|
+
 
 
 # Tools
