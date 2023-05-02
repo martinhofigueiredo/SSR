@@ -5,7 +5,7 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip
 
-RUN curl -o src-cloud.zip https://seed.nyc3.cdn.digitaloceanspaces.com/src-cloud.zip \
-    unzip src-cloud.zip \
-    ./install.sh
+RUN sudo curl -o src-cloud.zip https://seed.nyc3.cdn.digitaloceanspaces.com/src-cloud.zip \
+    sudo unzip src-cloud.zip \
+    sudo ./install.sh
 
