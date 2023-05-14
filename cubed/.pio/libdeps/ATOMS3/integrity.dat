@@ -1,0 +1,6 @@
+tanakamasayuki/I2C MPU6886 IMU@^1.0.0
+m5stack/M5GFX@^0.1.4
+arduino-libraries/Madgwick@^1.2.0
+lib/led_strip
+lib/infrared_tools
+m5stack/M5Unified@^0.1.4
