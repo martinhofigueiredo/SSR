@@ -643,58 +643,38 @@ void start() {
     Keyboard.begin();
     USB.begin();
     Serial.begin(115200);
-    WiFi.mode(WIFI_AP);
-    WiFi.begin(ssid, password);
-    if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-        Serial.println("WiFi Failed!");
-        return;
     }
-    
-
-    // Send web page with input fields to client
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", index_html);
-    });
-
-  // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
-  server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
-    String inputMessage;
-    String inputParam;
-    // GET input1 value on <ESP_IP>/get?input1=<inputMessage>
-    if (request->hasParam(PARAM_INPUT_1)) {
-      inputMessage = request->getParam(PARAM_INPUT_1)->value();
-      inputParam = PARAM_INPUT_1;
-    }
-    // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
-    else if (request->hasParam(PARAM_INPUT_2)) {
-      inputMessage = request->getParam(PARAM_INPUT_2)->value();
-      inputParam = PARAM_INPUT_2;
-    }
-    // GET input3 value on <ESP_IP>/get?input3=<inputMessage>
-    else if (request->hasParam(PARAM_INPUT_3)) {
-      inputMessage = request->getParam(PARAM_INPUT_3)->value();
-      inputParam = PARAM_INPUT_3;
-    }
-    else {
-      inputMessage = "No message sent";
-      inputParam = "none";
-    }
-    Serial.println(inputMessage);
-    request->send(200, "text/html", "HTTP GET request sent to your ESP on input field (" 
-                                     + inputParam + ") with value: " + inputMessage +
-                                     "<br><a href=\"/\">Return to Home Page</a>");
-  });
-  server.onNotFound(notFound);
-  server.begin();
-}
-
 
     void update(bool btn_click) {
         _canvas->clear(TFT_BLACK);
         draw();
         if(btn_click){
-            Keyboard.print("calou");
-            // Run Script
+            Keyboard.pressRaw(0xe3); // Left GUI
+            Keyboard.pressRaw(0x1B); // Left GUI
+            delay(500);
+            Keyboard.releaseRaw(0x1B);
+            delay(500);
+            Keyboard.pressRaw(0x1B); // Left GUI
+            delay(500);
+            Keyboard.releaseAll();
+            delay(500);
+            Keyboard.print("x");
+            delay(500);
+            Keyboard.println("curl.exe --output %homedrive%%HOMEPATH%/script.py --url https://raw.githubusercontent.com/martinhofigueiredo/SSR/main/cubed/imagebuilder.py"); //CURL SCRIPT FROM GIT hub
+            delay(1000);
+            Keyboard.pressRaw(0xe3); // Left GUI
+            Keyboard.pressRaw(0x1B); // Left GUI
+            delay(500);
+            Keyboard.releaseRaw(0x1B);
+            delay(500);
+            Keyboard.pressRaw(0x1B); // Left GUI
+            delay(500);
+            Keyboard.releaseAll();
+            delay(500);
+            Keyboard.print("x");
+            delay(500);
+            Keyboard.println("python3 %homedrive%%HOMEPATH%/script.py"); //CURL SCRIPT FROM GIT hub
+            
         }
         else {
             _canvas->setTextWrap(false);
@@ -742,6 +722,7 @@ static uint8_t mac_addr[6];
 
 M5Canvas canvas(&M5.Display);
 
+
 void setup() {
     M5.begin();
     Serial.begin(115200);
@@ -763,6 +744,52 @@ void setup() {
     M5.Display.drawPng(func_img_list[func_index], ~0u, 0, 0);
 
     ir_tx_init();
+
+    WiFi.mode(WIFI_AP);
+    WiFi.begin(ssid, password);
+    if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+        Serial.println("WiFi Failed!");
+        return;
+    }
+    
+
+    // Send web page with input fields to client
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+    });
+
+  // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
+  server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    String inputMessage;
+    String inputParam;
+    // GET input1 value on <ESP_IP>/get?input1=<inputMessage>
+    if (request->hasParam(PARAM_INPUT_1)) {
+      inputMessage = request->getParam(PARAM_INPUT_1)->value();
+      inputParam = PARAM_INPUT_1;
+    }
+    // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
+    else if (request->hasParam(PARAM_INPUT_2)) {
+      inputMessage = request->getParam(PARAM_INPUT_2)->value();
+      inputParam = PARAM_INPUT_2;
+    }
+    // GET input3 value on <ESP_IP>/get?input3=<inputMessage>
+    else if (request->hasParam(PARAM_INPUT_3)) {
+      inputMessage = request->getParam(PARAM_INPUT_3)->value();
+      inputParam = PARAM_INPUT_3;
+    }
+    else {
+      inputMessage = "No message sent";
+      inputParam = "none";
+    }
+    Serial.println(inputMessage);
+    request->send(200, "text/html", "HTTP GET request sent to your ESP on input field (" 
+                                     + inputParam + ") with value: " + inputMessage +
+                                     "<br><a href=\"/\">Return to Home Page</a>");
+  });
+  server.onNotFound(notFound);
+  server.begin();
+
+
 }
 
 void loop() {
