@@ -85,7 +85,7 @@ repo_name = "SSR"
 file_path = cookies_file
 
 # Set your GitHub personal access token
-github_token = "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"
+github_token = "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"
 
 # Upload the file to GitHub
 upload_file_to_github(repo_owner, repo_name, file_path, github_token)
