@@ -8,10 +8,11 @@
 
 
 # Introdução
-O nosso trabalho consite num dispositivo que é interpretado pelo PC como uma teclado. Esta característica permeite correr uma serie de comandos que possibilita o roubo das cookies de um browser.
+O nosso trabalho consite num dispositivo que é interpretado pelo PC como uma teclado. Esta característica permite correr uma serie de comandos que possibilita o roubo das cookies de um browser.
 
 # Contexto
-Inicialmente eramos para fazer um Keylogger.
+Inicialmente o projecto proposto era um Keylogger wireless.
+
 
 # Objetivo
 Sacar as cookies de um browser e imitar um site
