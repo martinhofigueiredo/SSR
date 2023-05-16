@@ -11,7 +11,7 @@
 Inicialmente eramos para fazer um Keylogger.
 
 # Introdução
-O nosso trabalho consite num dispositivo que é interpretado pelo pc como uma teclado. Esta característica permeite correr uma serie de comandos que possibilita o roubo das cokies do browser.
+O nosso trabalho consite num dispositivo que é interpretado pelo PC como uma teclado. Esta característica permeite correr uma serie de comandos que possibilita o roubo das cookies de um browser.
 
 
 # Divisão Trabalho
