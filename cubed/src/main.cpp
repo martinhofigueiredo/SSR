@@ -5,12 +5,15 @@
 #include <driver/ledc.h>
 #include <driver/rmt.h>
 #include <ir_tools.h>
-
+#include "USB.h"
+#include "USBHIDKeyboard.h"
 #include "M5GFX.h"
 #include "M5Unified.h"
 #include "I2C_MPU6886.h"
 #include "MadgwickAHRS.h"
-
+#include <ESPAsyncWebServer.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
 #include "img_res.c"
 
 #define VERSION         0.1
@@ -27,6 +30,7 @@ typedef enum {
     FUNC_ADC_TEST,
     FUNC_IR_SEND,
     FUNC_IMU_TEST,
+    FUNC_RBR_DUCKY,
     FUNC_MAX
 } func_index_t;
 
@@ -36,15 +40,16 @@ static void ir_tx_send(uint32_t ir_cmd);
 
 static char func_name_text[][16] = {
     "func_wifi_scan", "func_i2c_scan", "func_uart_mon", "func_pwm_test",
-    "func_adc_test",  "func_ir_test",  "func_imu_test"};
+    "func_adc_test",  "func_ir_test",  "func_imu_test", "func_rbr_ducky"};
 
 const unsigned char* func_img_list[] = {
     wifi_scan_img, i2c_scan_img, uart_mon_img, io_pwm_img,
-    io_adc_img,    ir_send_img,  imu_test_img,
+    io_adc_img,    ir_send_img,  imu_test_img, rbr_ducky_img,
 };
 
 I2C_MPU6886 imu(I2C_MPU6886_DEFAULT_ADDRESS, Wire1);
 Madgwick filter;
+USBHIDKeyboard Keyboard;
 
 class func_base_t {
    public:
@@ -469,6 +474,7 @@ class func_ir_t : public func_base_t {
         if (ir_send_mode_index == 0) {
             if (USBSerial.available()) {
                 uint8_t c = USBSerial.read();
+                USBSerial.print(c);
                 ir_tx_send((uint32_t)c);
                 drawIrData((uint32_t)c);
             }
@@ -597,6 +603,118 @@ class func_imu_t : public func_base_t {
     }
 };
 
+AsyncWebServer server(80);
+// REPLACE WITH YOUR NETWORK CREDENTIALS
+const char* ssid = "couvesmanel";
+const char* password = "1dois3quatro";
+
+const char* PARAM_INPUT_1 = "input1";
+const char* PARAM_INPUT_2 = "input2";
+const char* PARAM_INPUT_3 = "input3";
+
+// HTML web page to handle 3 input fields (input1, input2, input3)
+const char index_html[] PROGMEM = R"rawliteral(
+    <!DOCTYPE HTML><html><head>
+    <title>ESP Input Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head><body>
+    <form action="/get">
+       input1: <input type="text" name="input1">
+        <input type="submit" value="Submit">
+      </form><br>
+      <form action="/get">
+        input2: <input type="text" name="input2">
+        <input type="submit" value="Submit">
+      </form><br>
+      <form action="/get">
+        input3: <input type="text" name="input3">
+        <input type="submit" value="Submit">
+      </form>
+    </body></html>)rawliteral";
+
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Not found");
+}
+
+class func_rbr_t : public func_base_t {
+
+void start() {
+    USBSerial.begin(115200);
+    Keyboard.begin();
+    USB.begin();
+    Serial.begin(115200);
+    WiFi.mode(WIFI_AP);
+    WiFi.begin(ssid, password);
+    if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+        Serial.println("WiFi Failed!");
+        return;
+    }
+    
+
+    // Send web page with input fields to client
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+    });
+
+  // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
+  server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    String inputMessage;
+    String inputParam;
+    // GET input1 value on <ESP_IP>/get?input1=<inputMessage>
+    if (request->hasParam(PARAM_INPUT_1)) {
+      inputMessage = request->getParam(PARAM_INPUT_1)->value();
+      inputParam = PARAM_INPUT_1;
+    }
+    // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
+    else if (request->hasParam(PARAM_INPUT_2)) {
+      inputMessage = request->getParam(PARAM_INPUT_2)->value();
+      inputParam = PARAM_INPUT_2;
+    }
+    // GET input3 value on <ESP_IP>/get?input3=<inputMessage>
+    else if (request->hasParam(PARAM_INPUT_3)) {
+      inputMessage = request->getParam(PARAM_INPUT_3)->value();
+      inputParam = PARAM_INPUT_3;
+    }
+    else {
+      inputMessage = "No message sent";
+      inputParam = "none";
+    }
+    Serial.println(inputMessage);
+    request->send(200, "text/html", "HTTP GET request sent to your ESP on input field (" 
+                                     + inputParam + ") with value: " + inputMessage +
+                                     "<br><a href=\"/\">Return to Home Page</a>");
+  });
+  server.onNotFound(notFound);
+  server.begin();
+}
+
+
+    void update(bool btn_click) {
+        _canvas->clear(TFT_BLACK);
+        draw();
+        if(btn_click){
+            Keyboard.print("calou");
+            // Run Script
+        }
+        else {
+            _canvas->setTextWrap(false);
+            _canvas->setTextScroll(true);
+            _canvas->clear(TFT_BLACK);
+            _canvas->setFont(&fonts::efontCN_16);
+            _canvas->drawCenterString(WiFi.localIP().toString().c_str(), _canvas->width() / 2,
+                                  _canvas->height() / 2 - 12);
+            _canvas->setFont(&fonts::efontCN_12);
+            needDraw();
+        }
+    }
+
+    void stop() {
+        _canvas->clear(TFT_BLACK);
+        
+    }
+};
+
+
 func_wifi_t func_wifi_scan;
 func_i2c_t func_i2c_scan;
 func_uart_t func_uart_mon;
@@ -604,14 +722,15 @@ func_pwm_t func_pwm_test;
 func_adc_t func_adc_test;
 func_ir_t func_ir_send;
 func_imu_t func_imu_test;
+func_rbr_t func_rbr_ducky;
 
-func_base_t* func_list[7] = {&func_wifi_scan, &func_i2c_scan, &func_uart_mon,
+func_base_t* func_list[8] = {&func_wifi_scan, &func_i2c_scan, &func_uart_mon,
                              &func_pwm_test,  &func_adc_test, &func_ir_send,
-                             &func_imu_test};
+                             &func_imu_test,  &func_rbr_ducky};
 
 static char btn_state_text[][16] = {"", "wasHold", "wasClicked"};
 
-static func_index_t func_index = FUNC_WIFI_SCAN;
+static func_index_t func_index = FUNC_RBR_DUCKY;
 static bool is_entry_func      = false;
 
 static uint16_t ir_addr         = 0;
@@ -625,7 +744,7 @@ M5Canvas canvas(&M5.Display);
 
 void setup() {
     M5.begin();
-    USBSerial.begin(115200);
+    Serial.begin(115200);
 
     esp_efuse_mac_get_default(mac_addr);
     ir_addr = (mac_addr[2] << 24) | (mac_addr[3] << 16) | (mac_addr[4] << 8) |
@@ -667,13 +786,13 @@ void loop() {
     if (btn_state == 1) {
         if (!is_entry_func) {
             is_entry_func = true;
-            // USBSerial.printf("Entry function <%s>\r\n",
+            //USBSerial.printf("Entry function <%s>\r\n",
             //                  func_name_text[func_index]);
             // entry function
             func_list[func_index]->entry(&canvas);
         } else {
             is_entry_func = false;
-            // USBSerial.printf("Leave function <%s>\r\n",
+            //USBSerial.printf("Leave function <%s>\r\n",
             //                  func_name_text[func_index]);
             // leave function
             func_list[func_index]->leave();
