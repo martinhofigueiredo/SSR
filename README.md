@@ -1,4 +1,5 @@
 # SSR
+```mermaid
 flowchart LR
     subgraph TM[Target Machine]
         direction TB
@@ -25,3 +26,4 @@ flowchart LR
     D --> |presenting as keyboard| TM
     PP-->|Keyboard Shortcuts|cli
     s --> |pushes to| C
+```
